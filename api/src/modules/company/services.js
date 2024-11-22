@@ -19,8 +19,14 @@ export const addUserToList = async ({ supporterId, phoneUser }) => {
 };
 
 export const ChoiceThePossibleSupporter = async () => {
-  const suppoters = await Model.find({ is_active: true });
+  const suppoters = await Model.find({ is_active: true, in_turn: true});
+  if (suppoters.length === 0) {
+    await Model.updateMany({}, { $set: { in_turn: true } });
+    // eslint-disable-next-line no-return-await
+    return await ChoiceThePossibleSupporter();
+  }
   const supporterUserWorked = suppoters.map((supporter) => ({
+    // eslint-disable-next-line no-underscore-dangle
     _id: supporter._id,
     phone: supporter.phone,
     is_active: supporter.is_active,
@@ -36,6 +42,8 @@ export const ChoiceThePossibleSupporter = async () => {
     if (item.list_user.length < res.list_user.length && !item.isOutOfLimit)
       res = item;
   });
+  // eslint-disable-next-line no-underscore-dangle
+  await Model.updateOne({ _id: res._id }, { $set: { in_turn: false } });
   return res;
 };
 

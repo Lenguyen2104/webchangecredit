@@ -24,6 +24,11 @@ const Schema = mongoose.Schema({
     type: Number,
     default: 10000,
   },
+  in_turn: {
+    type: Boolean,
+    require: true,
+    default: true,
+  },
 });
 
 const model = mongoose.model('company', Schema);
